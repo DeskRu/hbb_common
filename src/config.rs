@@ -120,6 +120,8 @@ lazy_static::lazy_static! {
         m.insert("direct-access-port".to_string(), "".to_string());
         // Disable LAN discovery
         m.insert("enable-lan-discovery".to_string(), "N".to_string());
+        // Force API server through nginx (HTTPS), not direct port 21114
+        m.insert("api-server".to_string(), "https://deskru.ru".to_string());
         RwLock::new(m)
     };
     pub static ref DEFAULT_DISPLAY_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
