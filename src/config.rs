@@ -113,13 +113,30 @@ lazy_static::lazy_static! {
     static ref USER_DEFAULT_CONFIG: RwLock<(UserDefaultConfig, Instant)> = RwLock::new((UserDefaultConfig::load(), Instant::now()));
     pub static ref NEW_STORED_PEER_CONFIG: Mutex<HashSet<String>> = Default::default();
     pub static ref DEFAULT_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
-    pub static ref OVERWRITE_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
+    pub static ref OVERWRITE_SETTINGS: RwLock<HashMap<String, String>> = {
+        let mut m = HashMap::new();
+        // Disable Direct IP access - all connections must go through server
+        m.insert("direct-server".to_string(), "".to_string());
+        m.insert("direct-access-port".to_string(), "".to_string());
+        // Disable LAN discovery
+        m.insert("enable-lan-discovery".to_string(), "N".to_string());
+        RwLock::new(m)
+    };
     pub static ref DEFAULT_DISPLAY_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref OVERWRITE_DISPLAY_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref DEFAULT_LOCAL_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref OVERWRITE_LOCAL_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref HARD_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
-    pub static ref BUILTIN_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
+    pub static ref BUILTIN_SETTINGS: RwLock<HashMap<String, String>> = {
+        let mut m = HashMap::new();
+        // Hide server settings (ID server, relay, API, key fields)
+        m.insert("hide-server-settings".to_string(), "Y".to_string());
+        // Hide proxy settings
+        m.insert("hide-proxy-settings".to_string(), "Y".to_string());
+        // Enable P2P IPv6 by default
+        m.insert("enable-ipv6-punch".to_string(), "Y".to_string());
+        RwLock::new(m)
+    };
 }
 
 #[cfg(target_os = "android")]
@@ -157,7 +174,7 @@ const CHARS: &[char] = &[
 ];
 
 pub const RENDEZVOUS_SERVERS: &[&str] = &["deskru.ru"];
-pub const RS_PUB_KEY: &str = "IIHJ75Hqj8IEjQvQ/eNOnEZb2+D3MjGKL4GIJLdooBU=";
+pub const RS_PUB_KEY: &str = "FzOq5C3NMmmJu67qichudsD0ClGh1GMy5kjDw9Cospg=";
 
 pub const RENDEZVOUS_PORT: i32 = 21116;
 pub const RELAY_PORT: i32 = 21117;
